@@ -31,9 +31,21 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      // Only redirect to login if we're on a protected route
+      // Public routes (homepage, explore, video player) should not redirect
+      const currentPath = window.location.pathname;
+      const protectedRoutes = ['/admin', '/profile'];
+      const isProtectedRoute = protectedRoutes.some(route => currentPath.startsWith(route));
+      
+      // Clear auth data
       localStorage.removeItem('sunflix-token');
       localStorage.removeItem('sunflix-user');
-      window.location.href = '/login';
+      
+      // Only redirect if on protected route
+      if (isProtectedRoute) {
+        window.location.href = '/login';
+      }
+      // For public routes, just reject the error without redirecting
     }
     return Promise.reject(error);
   }

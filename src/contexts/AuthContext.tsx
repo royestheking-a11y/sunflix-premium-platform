@@ -39,31 +39,40 @@ export function AuthProvider({ children }: any) {
         const token = localStorage.getItem('sunflix-token');
         const savedUser = localStorage.getItem('sunflix-user');
 
-        if (token && savedUser) {
-          try {
-            const userData = JSON.parse(savedUser);
-            // Verify token is still valid
-            const response = await apiClient.get('/api/auth/me');
-            if (response && response.data) {
-              // Normalize user data - ensure id field exists
-              const userResponse = response.data;
-              const normalizedUser = {
-                ...userResponse,
-                id: userResponse._id || userResponse.id
-              };
-              setUser(normalizedUser);
-              // Update localStorage with fresh data
-              localStorage.setItem('sunflix-user', JSON.stringify(normalizedUser));
-            } else {
-              // Token invalid, clear storage
-              localStorage.removeItem('sunflix-token');
-              localStorage.removeItem('sunflix-user');
-            }
-          } catch (error) {
-            console.error('Auth check error:', error);
-            // Token invalid or expired, clear storage
+        // If no token, user is not logged in - that's fine for public pages
+        if (!token || !savedUser) {
+          setLoading(false);
+          return;
+        }
+
+        try {
+          const userData = JSON.parse(savedUser);
+          // Verify token is still valid
+          const response = await apiClient.get('/api/auth/me');
+          if (response && response.data) {
+            // Normalize user data - ensure id field exists
+            const userResponse = response.data;
+            const normalizedUser = {
+              ...userResponse,
+              id: userResponse._id || userResponse.id
+            };
+            setUser(normalizedUser);
+            // Update localStorage with fresh data
+            localStorage.setItem('sunflix-user', JSON.stringify(normalizedUser));
+          } else {
+            // Token invalid, clear storage
             localStorage.removeItem('sunflix-token');
             localStorage.removeItem('sunflix-user');
+            setUser(null);
+          }
+        } catch (error: any) {
+          // If 401 error, token is invalid - clear storage but don't redirect (handled by interceptor)
+          if (error.response?.status === 401) {
+            localStorage.removeItem('sunflix-token');
+            localStorage.removeItem('sunflix-user');
+            setUser(null);
+          } else {
+            console.error('Auth check error:', error);
           }
         }
       } catch (error) {
@@ -182,7 +191,8 @@ export function AuthProvider({ children }: any) {
       isAdmin: user?.role === 'admin',
       updateUserProfile
     }}>
-      {!loading && children}
+      {/* Always render children - don't block public pages while checking auth */}
+      {children}
     </AuthContext.Provider>
   );
 }

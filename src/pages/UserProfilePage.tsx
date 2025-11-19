@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import apiClient from '../lib/api-client';
 
 export function UserProfilePage() {
-  const { user, updateUserProfile, logout } = useAuth();
+  const { user, updateUserProfile, logout, loading } = useAuth();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(user?.name || '');
@@ -93,16 +93,19 @@ export function UserProfilePage() {
   const favoriteVideosList = allVideos.filter(v => favoriteVideos.includes(v.id));
 
   useEffect(() => {
-    if (!user) {
+    // Only redirect if auth check is complete and user is not logged in
+    if (!loading && !user) {
       navigate('/login');
       return;
     }
 
-    const savedPrefs = getUserPreferences(user.id);
-    if (savedPrefs) {
-      setPreferences(savedPrefs);
+    if (user) {
+      const savedPrefs = getUserPreferences(user.id);
+      if (savedPrefs) {
+        setPreferences(savedPrefs);
+      }
     }
-  }, [user, navigate]);
+  }, [user, navigate, loading]);
 
   const handleSaveProfile = () => {
     if (!user) return;
