@@ -106,9 +106,8 @@ export function HomePage() {
               >
                 <VideoCard video={video} />
               </motion.div>
-            ))}
+              ))}
             </div>
-          </motion.div>
           </section>
 
           {/* Between Rows Ad */}
