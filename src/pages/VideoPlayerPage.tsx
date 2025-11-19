@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Textarea } from '../components/ui/textarea';
 import { VideoCard } from '../components/VideoCard';
+import { AdBanner } from '../components/AdBanner';
 import type { Video, Comment } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
@@ -398,6 +399,11 @@ export function VideoPlayerPage() {
 
           {/* Related Videos Sidebar */}
           <div className="lg:col-span-1">
+            {/* Sidebar Ad */}
+            <div className="mb-6">
+              <AdBanner position="sidebar" className="w-full" />
+            </div>
+
             <h2 className="text-xl text-foreground mb-4">Related Videos</h2>
             <div className="space-y-4">
               {relatedVideos.map(relatedVideo => (
@@ -408,6 +414,11 @@ export function VideoPlayerPage() {
                   No related videos found
                 </p>
               )}
+            </div>
+
+            {/* Sidebar Ad (bottom) */}
+            <div className="mt-6">
+              <AdBanner position="sidebar" className="w-full" />
             </div>
           </div>
         </div>

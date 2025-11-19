@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Flame, Sparkles, Star, TrendingUp, Play, Music, Gamepad2, Cpu, Laugh, GraduationCap, Film } from 'lucide-react';
 import { VideoCard } from '../components/VideoCard';
 import { CategoryCard } from '../components/CategoryCard';
+import { AdBanner } from '../components/AdBanner';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
 import type { Video } from '../types';
 import { Button } from '../components/ui/button';
@@ -43,6 +44,11 @@ export function HomePage() {
   return (
     <div className="min-h-screen pt-20 bg-gradient-to-b from-background via-card to-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Top Banner Ad */}
+        <div className="mb-8">
+          <AdBanner position="banner" className="w-full" />
+        </div>
+
         {/* Compact Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -97,6 +103,11 @@ export function HomePage() {
           </div>
         </section>
 
+        {/* Between Rows Ad */}
+        <div className="mb-12">
+          <AdBanner position="between-rows" className="w-full" />
+        </div>
+
         {/* Trending Now Section */}
         {trendingVideos.length > 0 && (
           <section className="mb-12">
@@ -139,6 +150,11 @@ export function HomePage() {
             </div>
           </section>
         )}
+
+        {/* Between Rows Ad */}
+        <div className="mb-12">
+          <AdBanner position="between-rows" className="w-full" />
+        </div>
 
         {/* Popular Categories Section */}
         <section className="mb-12">

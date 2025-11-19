@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Filter } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { VideoCard } from '../components/VideoCard';
+import { AdBanner } from '../components/AdBanner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import type { Video } from '../types';
 import { toast } from 'sonner';
@@ -55,6 +56,11 @@ export function ExplorePage() {
   return (
     <div className="min-h-screen pt-16 bg-[#0E0E10]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Top Banner Ad */}
+        <div className="mb-8">
+          <AdBanner position="banner" className="w-full" />
+        </div>
+
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl text-white">Explore Videos</h1>
           <div className="flex items-center gap-4">
@@ -85,6 +91,11 @@ export function ExplorePage() {
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        {/* Between Rows Ad */}
+        <div className="mb-8">
+          <AdBanner position="between-rows" className="w-full" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

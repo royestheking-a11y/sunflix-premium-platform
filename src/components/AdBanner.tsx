@@ -14,17 +14,27 @@ export function AdBanner({ position, className = '' }: AdBannerProps) {
     try {
       const ads = await getAllAds();
       const available = (ads || []).filter((a: any) => a.active && a.position === position);
+      
       if (available.length === 0) {
         setAd(null);
         return;
       }
+      
       const picked = available[Math.floor(Math.random() * available.length)];
+      // Ensure we have a valid ID (either _id or id)
+      const adId = picked.id || picked._id;
+      if (!adId) {
+        console.warn('Ad missing ID:', picked);
+        return;
+      }
+      
       setAd(picked);
+      
       // increment impression count (best-effort)
       try {
-        await updateAd(picked.id, { impressions: (picked.impressions || 0) + 1 });
+        await updateAd(adId, { impressions: (picked.impressions || 0) + 1 });
       } catch (e) {
-        // ignore
+        // ignore - impression tracking is not critical
         // eslint-disable-next-line no-console
         console.error('Failed to track ad impression', e);
       }
@@ -39,12 +49,12 @@ export function AdBanner({ position, className = '' }: AdBannerProps) {
     // Initial fetch
     fetchAndSetAd();
 
-    // Refresh ads every 30 seconds to pick up new ads
+    // Refresh ads every 10 seconds to pick up new ads quickly
     const refreshInterval = setInterval(() => {
       if (mounted) {
         fetchAndSetAd();
       }
-    }, 30000); // 30 seconds
+    }, 10000); // 10 seconds - faster refresh for new ads
 
     // Refresh on window focus (when user comes back to tab)
     const handleFocus = () => {
@@ -72,14 +82,19 @@ export function AdBanner({ position, className = '' }: AdBannerProps) {
 
   const handleClick = async () => {
     if (ad) {
-      try {
-        await updateAd(ad.id, { clicks: (ad.clicks || 0) + 1 });
-      } catch (e) {
-        // ignore
-        // eslint-disable-next-line no-console
-        console.error('Failed to track ad click', e);
+      const adId = ad.id || ad._id;
+      if (adId) {
+        try {
+          await updateAd(adId, { clicks: (ad.clicks || 0) + 1 });
+        } catch (e) {
+          // ignore - click tracking is not critical
+          // eslint-disable-next-line no-console
+          console.error('Failed to track ad click', e);
+        }
       }
-      window.open(ad.clickUrl, '_blank');
+      if (ad.clickUrl) {
+        window.open(ad.clickUrl, '_blank');
+      }
     }
   };
 
