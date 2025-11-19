@@ -326,7 +326,8 @@ export function HomePage() {
             </section>
           )}
         </div>
-        )}
+            </>
+          )}
       </div>
     </>
   );
