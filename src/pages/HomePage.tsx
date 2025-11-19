@@ -325,9 +325,9 @@ export function HomePage() {
             </motion.div>
             </section>
           )}
-        </div>
             </>
           )}
+        </div>
       </div>
     </>
   );
