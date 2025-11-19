@@ -6,6 +6,7 @@ import { Badge } from '../components/ui/badge';
 import { Textarea } from '../components/ui/textarea';
 import { VideoCard } from '../components/VideoCard';
 import { AdBanner } from '../components/AdBanner';
+import { SEO } from '../components/SEO';
 import type { Video, Comment } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
@@ -198,8 +199,23 @@ export function VideoPlayerPage() {
   const embedUrl = convertToEmbedUrl(video.url, true);
 
   return (
-    <div className="min-h-screen pt-16 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <SEO
+        title={`${video.title} - Watch Free on SUNFLIX`}
+        description={video.description || `Watch ${video.title} free on SUNFLIX. ${video.category} video with ${video.views || 0} views.`}
+        keywords={`${video.title}, ${video.category}, watch free, ${video.tags?.join(', ') || ''}, sunflix`}
+        url={`https://sunflixpro.vercel.app/video/${video._id || video.id}`}
+        type="video.other"
+        video={{
+          title: video.title,
+          description: video.description || `Watch ${video.title} free on SUNFLIX`,
+          thumbnailUrl: video.thumbnail || 'https://sunflixpro.vercel.app/banner.jpg',
+          uploadDate: video.createdAt || new Date().toISOString(),
+          contentUrl: embedUrl,
+        }}
+      />
+      <div className="min-h-screen pt-16 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Video Section */}
           <div className="lg:col-span-2">
@@ -424,5 +440,6 @@ export function VideoPlayerPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

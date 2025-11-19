@@ -3,6 +3,7 @@ import { Filter } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { VideoCard } from '../components/VideoCard';
 import { AdBanner } from '../components/AdBanner';
+import { SEO } from '../components/SEO';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import type { Video } from '../types';
 import { toast } from 'sonner';
@@ -54,8 +55,14 @@ export function ExplorePage() {
   };
 
   return (
-    <div className="min-h-screen pt-16 bg-[#0E0E10]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <SEO
+        title="Explore Videos - SUNFLIX | Browse All Movies & Series"
+        description="Explore and discover thousands of free movies and series on SUNFLIX. Browse by category, sort by latest, most viewed, or most liked. Find your next favorite show!"
+        url="https://sunflixpro.vercel.app/explore"
+      />
+      <div className="min-h-screen pt-16 bg-[#0E0E10]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Top Banner Ad */}
         <div className="mb-8">
           <AdBanner position="banner" className="w-full" />
@@ -109,7 +116,8 @@ export function ExplorePage() {
             No videos found with the current filters
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

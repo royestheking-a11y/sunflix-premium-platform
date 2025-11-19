@@ -5,6 +5,7 @@ import { Flame, Sparkles, Star, TrendingUp, Play, Music, Gamepad2, Cpu, Laugh, G
 import { VideoCard } from '../components/VideoCard';
 import { CategoryCard } from '../components/CategoryCard';
 import { AdBanner } from '../components/AdBanner';
+import { SEO } from '../components/SEO';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/tabs';
 import type { Video } from '../types';
 import { Button } from '../components/ui/button';
@@ -42,8 +43,14 @@ export function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen pt-20 bg-gradient-to-b from-background via-card to-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <>
+      <SEO
+        title="SUNFLIX – Free Movies & Series | Hindi • Hollywood • KDrama • Turkish • CDrama • English | Watch Online"
+        description="SUNFLIX – Watch free Hindi movies, Hollywood movies, Korean drama, Turkish drama, English series, Chinese drama, cartoons, entertainment videos and trending content. No ads, no login. Watch. Shine. Repeat."
+        url="https://sunflixpro.vercel.app/"
+      />
+      <div className="min-h-screen pt-20 bg-gradient-to-b from-background via-card to-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Top Banner Ad */}
         <div className="mb-8">
           <AdBanner position="banner" className="w-full" />

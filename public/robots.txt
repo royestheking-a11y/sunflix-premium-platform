@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /login
+Disallow: /profile
+
+# Sitemap
+Sitemap: https://sunflixpro.vercel.app/sitemap.xml
+
