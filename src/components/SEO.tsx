@@ -33,7 +33,7 @@ export function SEO({
     // Update or create meta tags
     const updateMetaTag = (name: string, content: string, isProperty = false) => {
       const attribute = isProperty ? 'property' : 'name';
-      let meta = document.querySelector(`meta[${attribute}="${name}"]`);
+      let meta = document.querySelector(`meta[${attribute}="${name}"]`) as HTMLMetaElement | null;
       if (!meta) {
         meta = document.createElement('meta');
         meta.setAttribute(attribute, name);
@@ -55,7 +55,7 @@ export function SEO({
     updateMetaTag('twitter:image', image);
 
     // Update canonical link
-    let canonical = document.querySelector('link[rel="canonical"]');
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!canonical) {
       canonical = document.createElement('link');
       canonical.setAttribute('rel', 'canonical');
@@ -65,7 +65,7 @@ export function SEO({
 
     // Add VideoObject structured data if video is provided
     if (video) {
-      let videoScript = document.getElementById('video-structured-data');
+      let videoScript = document.getElementById('video-structured-data') as HTMLScriptElement | null;
       if (videoScript) {
         videoScript.remove();
       }
