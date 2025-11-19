@@ -234,7 +234,11 @@ app.get('/api/videos', async (req, res) => {
     const { category } = req.query;
     const query = { status: 'published' };
     if (category) query.category = category;
-    const videos = await Video.find(query).limit(50);
+    // Optimize query with sorting and limit
+    const videos = await Video.find(query)
+      .sort({ createdAt: -1 }) // Sort by newest first
+      .limit(50)
+      .lean(); // Use lean() for faster queries (returns plain JS objects)
     res.json(videos);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch videos' });
@@ -244,7 +248,10 @@ app.get('/api/videos', async (req, res) => {
 app.get('/api/videos/trending/list', async (req, res) => {
   try {
     await connectToDatabase();
-    const videos = await Video.find({ trending: true, status: 'published' }).limit(10);
+    const videos = await Video.find({ trending: true, status: 'published' })
+      .sort({ views: -1 }) // Sort by views for trending
+      .limit(10)
+      .lean();
     res.json(videos);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch trending videos' });
@@ -254,7 +261,10 @@ app.get('/api/videos/trending/list', async (req, res) => {
 app.get('/api/videos/featured/list', async (req, res) => {
   try {
     await connectToDatabase();
-    const videos = await Video.find({ featured: true, status: 'published' }).limit(10);
+    const videos = await Video.find({ featured: true, status: 'published' })
+      .sort({ createdAt: -1 }) // Sort by newest
+      .limit(10)
+      .lean();
     res.json(videos);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch featured videos' });
@@ -283,7 +293,7 @@ app.get('/api/videos/search', async (req, res) => {
 app.get('/api/videos/:id', async (req, res) => {
   try {
     await connectToDatabase();
-    const video = await Video.findById(req.params.id);
+    const video = await Video.findById(req.params.id).lean();
     if (!video) {
       return res.status(404).json({ error: 'Video not found' });
     }

@@ -13,6 +13,7 @@ export function ExplorePage() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [sortBy, setSortBy] = useState<'latest' | 'views' | 'likes'>('latest');
   const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [loading, setLoading] = useState(true);
 
   const categories = ['all', 'Entertainment', 'Music', 'Gaming', 'Tech', 'Comedy', 'Education'];
 
@@ -21,6 +22,7 @@ export function ExplorePage() {
   }, [sortBy, filterCategory]);
 
   const loadVideos = () => {
+    setLoading(true);
     // Fetch published videos from API
     apiClient
       .get('/api/videos?status=published')
@@ -36,21 +38,23 @@ export function ExplorePage() {
         // Sort
         switch (sortBy) {
           case 'views':
-            filtered.sort((a: any, b: any) => b.views - a.views);
+            filtered.sort((a: any, b: any) => (b.views || 0) - (a.views || 0));
             break;
           case 'likes':
-            filtered.sort((a: any, b: any) => b.likes - a.likes);
+            filtered.sort((a: any, b: any) => (b.likes || 0) - (a.likes || 0));
             break;
           case 'latest':
           default:
-            filtered.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            filtered.sort((a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
         }
 
         setVideos(filtered);
+        setLoading(false);
       })
       .catch(error => {
         console.error('Error loading videos:', error);
         toast.error('Failed to load videos');
+        setLoading(false);
       });
   };
 
@@ -105,16 +109,27 @@ export function ExplorePage() {
           <AdBanner position="between-rows" className="w-full" />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {videos.map(video => (
-            <VideoCard key={video._id || video.id} video={video} />
-          ))}
-        </div>
-
-        {videos.length === 0 && (
-          <div className="text-center text-[#A0A0A0] py-20">
-            No videos found with the current filters
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFB800] mx-auto mb-4"></div>
+              <div className="text-foreground text-xl">Loading videos...</div>
+            </div>
           </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {videos.map(video => (
+                <VideoCard key={video._id || video.id} video={video} />
+              ))}
+            </div>
+
+            {videos.length === 0 && (
+              <div className="text-center text-[#A0A0A0] py-20">
+                No videos found with the current filters
+              </div>
+            )}
+          </>
         )}
         </div>
       </div>

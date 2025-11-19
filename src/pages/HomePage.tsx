@@ -15,17 +15,23 @@ import apiClient from '../lib/api-client';
 export function HomePage() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [activeCategory, setActiveCategory] = useState('Entertainment');
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
+    setLoading(true);
     // Fetch videos from MongoDB API
     apiClient
       .get('/api/videos?status=published')
       .then(res => res.data)
-      .then(videos => setVideos(videos))
+      .then(videos => {
+        setVideos(videos);
+        setLoading(false);
+      })
       .catch(error => {
         console.error('Error loading videos:', error);
         toast.error('Failed to load videos');
+        setLoading(false);
       });
   }, []);
 
@@ -311,6 +317,7 @@ export function HomePage() {
             </section>
           )}
         </div>
+        )}
       </div>
     </>
   );

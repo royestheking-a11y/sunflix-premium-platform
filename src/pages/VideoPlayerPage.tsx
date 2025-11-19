@@ -23,10 +23,19 @@ export function VideoPlayerPage() {
   const [liked, setLiked] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentText, setCommentText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
+    // Reset states when id changes
+    setLoading(true);
+    setError(false);
+    setVideo(null);
+    setRelatedVideos([]);
+    setComments([]);
+
     // Protect against literal 'undefined' string (can happen if IDs were missing when linking)
     if (id && id !== 'undefined') {
       // Fetch video from API via centralized apiClient (ensures correct baseURL and auth)
@@ -34,7 +43,14 @@ export function VideoPlayerPage() {
         .get(`/api/videos/${id}`)
         .then(res => res.data)
         .then(currentVideo => {
+          if (!currentVideo) {
+            setError(true);
+            setLoading(false);
+            return;
+          }
+
           setVideo(currentVideo);
+          setLoading(false);
 
           // Increment views via API (fire-and-forget)
           apiClient
@@ -48,26 +64,33 @@ export function VideoPlayerPage() {
               .catch(err => console.error('Error adding to watch history:', err));
           }
 
-          // Get related videos from same category
-          return apiClient.get(`/api/videos?category=${encodeURIComponent(currentVideo.category || '')}`);
-        })
-        .then(res => res.data as Video[])
-        .then((videos: Video[]) => {
-          const related = videos
-            .filter(v => v._id !== id && v.id !== id && v.status === 'published')
-            .slice(0, 6);
-          setRelatedVideos(related);
+          // Get related videos from same category (parallel with comments)
+          const relatedPromise = apiClient.get(`/api/videos?category=${encodeURIComponent(currentVideo.category || '')}`)
+            .then(res => res.data as Video[])
+            .then((videos: Video[]) => {
+              const related = videos
+                .filter(v => v._id !== id && v.id !== id && v.status === 'published')
+                .slice(0, 6);
+              setRelatedVideos(related);
+            })
+            .catch(err => console.error('Error loading related videos:', err));
+
+          // Load comments in parallel
+          loadComments();
+
+          return relatedPromise;
         })
         .catch(error => {
           console.error('Error loading video:', error);
+          setError(true);
+          setLoading(false);
           toast.error('Failed to load video');
-          navigate('/');
         });
-
-        // Load comments
-        loadComments();
+    } else {
+      setError(true);
+      setLoading(false);
     }
-  }, [id]);
+  }, [id, user]);
 
   const loadComments = () => {
     if (id) {
@@ -187,10 +210,28 @@ export function VideoPlayerPage() {
     return 'Just now';
   };
 
-  if (!video) {
+  // Show loading state
+  if (loading) {
     return (
       <div className="min-h-screen pt-16 flex items-center justify-center bg-background">
-        <div className="text-foreground text-xl">Video not found</div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFB800] mx-auto mb-4"></div>
+          <div className="text-foreground text-xl">Loading video...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error || !video) {
+    return (
+      <div className="min-h-screen pt-16 flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="text-foreground text-xl mb-4">Video not found</div>
+          <Button onClick={() => navigate('/')} className="bg-[#FFB800] text-black hover:bg-[#FF7E00]">
+            Go to Home
+          </Button>
+        </div>
       </div>
     );
   }
