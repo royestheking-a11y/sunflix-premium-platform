@@ -57,6 +57,15 @@ export function HomePage() {
       />
       <div className="min-h-screen pt-20 bg-gradient-to-b from-background via-card to-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FFB800] mx-auto mb-4"></div>
+                <div className="text-foreground text-xl">Loading videos...</div>
+              </div>
+            </div>
+          ) : (
+            <>
           {/* Top Banner Ad */}
           <div className="mb-8">
             <AdBanner position="banner" className="w-full" />
